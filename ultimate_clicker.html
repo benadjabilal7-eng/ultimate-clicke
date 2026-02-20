@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Ultimate Clicker</title>
+
+<style>
+body{
+    text-align:center;
+    font-family:Arial;
+    color:white;
+    background:#111;
+    transition:1s;
+}
+#click{
+    font-size:40px;
+    padding:40px;
+    border-radius:50%;
+    background:lime;
+    border:none;
+    cursor:pointer;
+}
+.bar{
+    width:300px;
+    height:20px;
+    background:#333;
+    margin:auto;
+    border-radius:10px;
+}
+.fill{
+    height:100%;
+    background:lime;
+    width:0%;
+    border-radius:10px;
+}
+.shop{
+    width:350px;
+    margin:auto;
+    background:#222;
+    padding:20px;
+    border-radius:15px;
+}
+button{
+    padding:12px;
+    margin:6px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚡ Ultimate Clicker</h1>
+
+<h2 id="score"></h2>
+<h3 id="level"></h3>
+<h3 id="progressText"></h3>
+
+<div class="bar">
+<div id="progress" class="fill"></div>
+</div>
+
+<br>
+
+<button id="click">⚡ CLICK</button>
+
+<div class="shop">
+<h2>🛒 SHOP</h2>
+
+<button onclick="buyPower(5,50)">+5 Power (50)</button>
+<button onclick="buyPower(20,200)">+20 Power (200)</button>
+<button onclick="doublePower()">x2 Power (500)</button>
+<button onclick="buyAuto()">Auto Clicker (1000)</button>
+<button onclick="endGame()">🏆 END GAME (100,000,000)</button>
+
+</div>
+
+<script>
+let score = Number(localStorage.score)||0;
+let power = Number(localStorage.power)||1;
+let auto = Number(localStorage.auto)||0;
+
+const LEVEL_COST = 200;
+
+function level(){
+    return Math.floor(score/LEVEL_COST)+1;
+}
+
+function update(){
+    let lv = level();
+    let prog = score % LEVEL_COST;
+
+    document.getElementById("score").innerText = "Score: "+score;
+    document.getElementById("level").innerText = "Level: "+lv+" | Power: "+power+" | Auto: "+auto;
+    document.getElementById("progressText").innerText = prog+" / "+LEVEL_COST;
+
+    document.getElementById("progress").style.width = (prog/LEVEL_COST*100)+"%";
+
+    let hue = (lv*40)%360;
+    document.body.style.background = "hsl("+hue+",40%,15%)";
+
+    localStorage.score=score;
+    localStorage.power=power;
+    localStorage.auto=auto;
+}
+
+document.getElementById("click").onclick = ()=>{
+    score += power;
+    update();
+};
+
+function buyPower(amount,cost){
+    if(score>=cost){
+        score-=cost;
+        power+=amount;
+        update();
+    }
+}
+
+function doublePower(){
+    if(score>=500){
+        score-=500;
+        power*=2;
+        update();
+    }
+}
+
+function buyAuto(){
+    if(score>=1000){
+        score-=1000;
+        auto++;
+        update();
+    }
+}
+
+setInterval(()=>{
+    score+=auto;
+    update();
+},1000);
+function endGame(){
+    if(score >= 100000000){
+        document.body.innerHTML = `
+            <h1 style="font-size:60px;color:gold;">🏆 CONGRATULATIONS!</h1>
+            <h2>You finished the game!</h2>
+            <h3>Your final score: ${score}</h3>
+        `;
+        clearInterval();
+    } else {
+        alert("You need 100 MILLION points!");
+    }
+}
+
+update();
+</script>
+
+</body>
+</html>
